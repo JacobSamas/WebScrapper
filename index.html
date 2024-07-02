@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraper</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background-color: white; 
+            color: black;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 { 
+            font-size: 2.5em; 
+            margin-bottom: 20px; 
+        }
+        form { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        input[type="text"] { 
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            font-size: 1em;
+        }
+        button { 
+            padding: 10px 20px; 
+            border: none; 
+            background-color: black; 
+            color: white; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 1em; 
+            transition: background-color 0.3s;
+        }
+        button:hover { 
+            background-color: #333; 
+        }
+        #result { 
+            margin-top: 20px; 
+            text-align: left; 
+        }
+        ul { 
+            list-style-type: none; 
+            padding: 0; 
+        }
+        li { 
+            background: #f9f9f9; 
+            padding: 10px; 
+            margin-bottom: 5px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+        }
+        a { 
+            display: inline-block; 
+            margin-top: 10px; 
+            text-decoration: none; 
+            color: black; 
+            font-weight: bold;
+            border: 1px solid black;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        a:hover { 
+            background-color: black; 
+            color: white; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Web Scraper</h1>
+        <form id="scrapeForm">
+            <label for="url">Enter URL to scrape:</label><br><br>
+            <input type="text" id="url" name="url" required><br><br>
+            <button type="submit">Scrape</button>
+        </form>
+        <div id="result"></div>
+    </div>
+    <script>
+        document.getElementById('scrapeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const url = document.getElementById('url').value;
+            fetch('/scrape', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url: url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.success) {
+                    resultDiv.innerHTML = `<h2>Headings</h2><ul>${data.headings.map(h => `<li>${h}</li>`).join('')}</ul>
+                                           <a href="/download/${data.json}" download>Download JSON</a>`;
+                } else {
+                    resultDiv.textContent = 'Failed to scrape the webpage.';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

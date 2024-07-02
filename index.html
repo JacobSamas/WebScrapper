@@ -59,17 +59,6 @@
             margin-top: 20px; 
             text-align: left; 
         }
-        ul { 
-            list-style-type: none; 
-            padding: 0; 
-        }
-        li { 
-            background: #f9f9f9; 
-            padding: 10px; 
-            margin-bottom: 5px; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-        }
         a { 
             display: inline-block; 
             margin-top: 10px; 
@@ -112,8 +101,7 @@
             .then(data => {
                 const resultDiv = document.getElementById('result');
                 if (data.success) {
-                    resultDiv.innerHTML = `<h2>Headings</h2><ul>${data.headings.map(h => `<li>${h}</li>`).join('')}</ul>
-                                           <a href="/download/${data.json}" download>Download JSON</a>`;
+                    resultDiv.innerHTML = `<a href="/download/${data.html}" download>Download Scraped HTML</a>`;
                 } else {
                     resultDiv.textContent = 'Failed to scrape the webpage.';
                 }

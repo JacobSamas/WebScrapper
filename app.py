@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory, send_file
-from bs4 import BeautifulSoup
 import requests
-import json
 import os
 
 app = Flask(__name__)
@@ -18,24 +16,29 @@ def scrape():
     try:
         response = requests.get(url)
         response.raise_for_status()
-        soup = BeautifulSoup(response.content, 'html.parser')
         
-        headings = soup.find_all('h1')
-        heading_texts = [heading.get_text() for heading in headings]
+        # Get the whole HTML content
+        html_content = response.text
         
-        # Save to JSON
-        json_path = 'headings.json'
-        with open(json_path, 'w') as json_file:
-            json.dump(heading_texts, json_file)
+        # Save to an HTML file
+        html_path = 'scraped_page.html'
+        with open(html_path, 'w', encoding='utf-8') as html_file:
+            html_file.write(html_content)
         
-        return jsonify({'success': True, 'headings': heading_texts, 'json': json_path})
+        return jsonify({'success': True, 'html': html_path})
     except requests.RequestException as e:
         print(f"Error: {e}")
         return jsonify({'success': False})
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    return send_file(filename, as_attachment=True)
+    file_path = os.path.join(os.getcwd(), filename)
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="text/html")
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+            return response
+    raise Http404
 
 if __name__ == '__main__':
     app.run(debug=True)
